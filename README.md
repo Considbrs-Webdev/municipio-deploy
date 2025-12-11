@@ -5,11 +5,6 @@
 [![Issues][issues-shield]][issues-url]
 [![License][license-shield]][license-url]
 
-<p>
-  <a href="https://github.com/helsingborg-stad/municipio-deploy">
-    <img src="images/hbg-github-logo-combo.png" alt="Logo" width="300">
-  </a>
-</p>
 <h3>Municipio Deploy</h3>
 <p>
   A collection of actions to deploy municipio based sites and modules at Helsingborg stad.

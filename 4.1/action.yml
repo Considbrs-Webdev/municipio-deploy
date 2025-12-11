@@ -45,42 +45,6 @@ inputs:
     description: If the preflight should be skipped
     default: false
     required: false
-  newrelic-app-id:
-    description: App ID for deployment tracking with newrelic
-    default: ""
-    required: false
-  newrelic-api-key:
-    description: API Key for deployment tracking with newrelic
-    default: ""
-    required: false
-  sentry-url:
-    description: Base url to sentry instance
-    default: ""
-    required: false
-  sentry-org:
-    description: The Organization Slug the project is at
-    default: ""
-    required: false
-  sentry-version:
-    description: The version identifier of the release to track the deploy for. 
-    default: ""
-    required: false
-  sentry-api-key:
-    description: The API key to use with sentry
-    default: ""
-    required: false
-  sentry-env:
-    description: The enviroment to track the deploy for
-    default: ""
-    required: false
-  tideways-api-key:
-    description: The API key to use with tideways
-    default: ""
-    required: false
-  tideways-env:
-    description: The enviroment to track the deploy for
-    default: ""
-    required: false
 
 runs:
   using: composite
@@ -315,34 +279,3 @@ runs:
         username: ${{ inputs.deploy-host-user }}
         key: ${{ inputs.deploy-host-user-key }}
         port: ${{ inputs.deploy-port }}
-    - name: Ping NewRelic
-      if: ${{ inputs.newrelic-app-id != '' && inputs.newrelic-api-key != '' }}
-      run: |
-        curl -X POST "https://api.newrelic.com/v2/applications/${{ inputs.newrelic-app-id }}/deployments.json" \
-        -H "X-Api-Key:${{ inputs.newrelic-api-key }}" \
-        -i \
-        -H "Content-Type: application/json" \
-        -d '{
-          "deployment": {
-            "revision": "${{ github.sha }}",
-            "user": "${{ github.actor }}"
-          }
-        }'
-      shell: bash
-    - name: Ping Sentry
-      if: ${{ inputs.sentry-url != '' && inputs.sentry-org != '' && inputs.sentry-version != '' && inputs.sentry-api-key != '' && inputs.sentry-env != '' }}
-      run: |
-        curl ${{ inputs.sentry-url }}/api/0/organizations/${{ inputs.sentry-org }}/releases/${{ inputs.sentry-version }}/deploys/ \
-          -H 'Authorization: Bearer ${{ inputs.sentry-api-key }}' \
-          -H 'Content-Type: application/json' \
-          -d '{"environment":"${{ inputs.sentry-env }}"}'
-      shell: bash
-
-    - name: Ping Tideways
-      uses: tideways/release-action@v1
-      if: ${{ inputs.tideways-api-key != '' && inputs.tideways-env != '' }}
-      with:
-        apiKey: ${{ inputs.tideways-api-key }}
-        name: 'Released commit ${{ github.sha }}'
-        environment: ${{ inputs.tideways-env }}
-        compareAfterMinutes: 90
